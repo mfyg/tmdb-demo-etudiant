@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function(){
 })
 
 
-class MovieDB{ /**commence toujours par une majuscule. Dans une classe, il y a toujours un contructor.**/
+class MovieDB{ /**commence toujours par une majuscule. Dans une classe, il y a toujours un constructor.**/
 
     constructor() {
         console.log("new MovieDB");
@@ -36,9 +36,25 @@ class MovieDB{ /**commence toujours par une majuscule. Dans une classe, il y a t
 
 
     afficherDernierFilm(data){
-        for (let i = 0; i < data.length; i++) {
-            console.log(data[i].title);
-            console.log(data[i].overview);
+
+        let section = document.querySelector(".liste-films");
+        for (let i = 0; i <this.totalFilm; i++) {
+           // console.log(data[i].title);
+           // console.log(data[i].overview);
+
+            let article = document.querySelector(".template .film").cloneNode(true);
+            article.querySelector("h2").innerHTML = data[i].title;
+           /* if(data[i].overview != ""){
+                article.querySelector(".description").innerHTML = data[i].overview
+            }else{
+                article.querySelector(".description").innerHTML = "Aucune description disponible";
+            }*/
+
+            article.querySelector(".description").innerHTML =data[i].overview || "Aucune description disponible";
+            let image = article.querySelector("img");
+            image.src = this.imgPath + "w300" + data[i].poster_path;
+
+            section.appendChild(article);
         }
     }
 }
