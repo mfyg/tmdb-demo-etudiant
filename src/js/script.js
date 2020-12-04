@@ -1,8 +1,13 @@
 document.addEventListener("DOMContentLoaded", function(){
 
     let connexion = new MovieDB(); /**appellation de la fonction**/
-    connexion.requeteDernierFilm();
-})
+    if(document.location.pathname.search('fiche-film.html') > 0){
+        connexion.requeteInfoFilm()
+
+    }else{
+        connexion.requeteDernierFilm();
+    }
+});
 
 
 class MovieDB{ /**commence toujours par une majuscule. Dans une classe, il y a toujours un constructor.**/
@@ -37,24 +42,62 @@ class MovieDB{ /**commence toujours par une majuscule. Dans une classe, il y a t
 
     afficherDernierFilm(data){
 
-        let section = document.querySelector(".liste-films");
+        let section = document.querySelector('.liste-films');
         for (let i = 0; i <this.totalFilm; i++) {
            // console.log(data[i].title);
            // console.log(data[i].overview);
 
             let article = document.querySelector(".template .film").cloneNode(true);
-            article.querySelector("h2").innerHTML = data[i].title;
+            article.querySelector('h2').innerHTML = data[i].title;
            /* if(data[i].overview != ""){
                 article.querySelector(".description").innerHTML = data[i].overview
             }else{
                 article.querySelector(".description").innerHTML = "Aucune description disponible";
             }*/
-
             article.querySelector(".description").innerHTML =data[i].overview || "Aucune description disponible";
-            let image = article.querySelector("img");
+
+            let image = article.querySelector('img');
             image.src = this.imgPath + "w300" + data[i].poster_path;
+
+            article.querySelector('a').href = "fiche-film.html?id" +data[i].id; //toujours regarder sur le site movieDB
 
             section.appendChild(article);
         }
+    }
+
+    requeteInfoFilm(movieId){
+
+        let requete = new XMLHttpRequest(); /**AJAX?**/
+        requete.addEventListener("loadend", this.retourRequeteInfoFilm.bind(this) );
+        requete.open("GET", this.baseURL + "movie/"+ movieId +'?api_key=' + this.APIkey + "&language=" + this.lang + "&page=1");
+        requete.send();
+
+    }
+
+    retourRequeteInfoFilm(event){
+        let target = event.currentTarget;
+        let data = JSON.parse(target.responseText).results;
+        this.afficherInfoFilm(data);
+    }
+
+
+    afficherInfoFilm(data){
+
+        document.querySelector('h1').innerHTML = data.title;
+
+        // for (let i = 0; i < this.totalFilm; i++) {
+        //
+        //     let article = document.querySelector(".template .film").cloneNode(true);
+        //     article.querySelector('h2').innerHTML = data[i].title;
+        //
+        //     article.querySelector(".description").innerHTML =data[i].overview || "Aucune description disponible";
+        //
+        //     let image = article.querySelector('img');
+        //     image.src = this.imgPath + "w300" + data[i].poster_path;
+        //
+        //     article.querySelector('a').href = "fiche-film.html?id" +data[i].id; //toujours regarder sur le site movieDB
+        //
+        //     section.appendChild(article);
+        // }
     }
 }
